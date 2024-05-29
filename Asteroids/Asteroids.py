@@ -27,13 +27,13 @@ pygame.display.set_caption("Asteroids")
 timer = pygame.time.Clock()
 
 # Import sound effects
-snd_fire = pygame.mixer.Sound("Sounds/fire.wav")
-snd_bangL = pygame.mixer.Sound("Sounds/bangLarge.wav")
-snd_bangM = pygame.mixer.Sound("Sounds/bangMedium.wav")
-snd_bangS = pygame.mixer.Sound("Sounds/bangSmall.wav")
-snd_extra = pygame.mixer.Sound("Sounds/extra.wav")
-snd_saucerB = pygame.mixer.Sound("Sounds/saucerBig.wav")
-snd_saucerS = pygame.mixer.Sound("Sounds/saucerSmall.wav")
+snd_fire = pygame.mixer.Sound("AsteroidsAI/Asteroids/Sounds/fire.wav")
+snd_bangL = pygame.mixer.Sound("AsteroidsAI/Asteroids/Sounds/bangLarge.wav")
+snd_bangM = pygame.mixer.Sound("AsteroidsAI/Asteroids/Sounds/bangMedium.wav")
+snd_bangS = pygame.mixer.Sound("AsteroidsAI/Asteroids/Sounds/bangSmall.wav")
+snd_extra = pygame.mixer.Sound("AsteroidsAI/Asteroids/Sounds/extra.wav")
+snd_saucerB = pygame.mixer.Sound("AsteroidsAI/Asteroids/Sounds/saucerBig.wav")
+snd_saucerS = pygame.mixer.Sound("AsteroidsAI/Asteroids/Sounds/saucerSmall.wav")
 
 
 # Create function to draw texts

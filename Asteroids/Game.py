@@ -2,8 +2,11 @@ import pygame
 import math
 import random
 
+from Asteroids.Asteroids import Player, Saucer
+
 class Game:
     def __init__(self,fps,model_playing,disable_display) -> None:
+        pygame.init()
         #init run constants
         self.fps=fps
         self.model_playing=model_playing
@@ -39,6 +42,34 @@ class Game:
         self.snd_bangS = pygame.mixer.Sound("Sounds/bangSmall.wav")
         self.snd_extra = pygame.mixer.Sound("Sounds/extra.wav")
         
+    def start_game_loop(self):
+        self.gameState = 0
+        self.playerState = 0
+        self.player_pieces = 0
+        self.player_dying_delay = 0
+        self.player_invi_dur = 0
+        self.hyperspace = 0
+        self.next_level_delay = 0
+        self.bullet_capacity = 4
+        self.bullets = []
+        self.asteroids = []
+        self.stage = 3
+        self.score = 0
+        self.live = 0
+        self.oneUp_multiplier = 1
+        self.playOneUpSFX = 0
+        self.intensity = 0
+
+        self.player = Player(self.display_width / 2, self.display_height / 2, self.player_max_speed, self.player_max_rtspd, self.fd_fric, self.bd_fric, self.player_size, self.display_width, self.display_height)
+        self.saucer = Saucer()
+
+        while self.gameState == 0:
+            self.playStep()
+
+    def CloseGame():
+        pygame.quit()
+        quit()
+
     def playSound(self,*args):
         if self.disable_display:
             return

@@ -2,7 +2,10 @@ import pygame
 import math
 import random
 
-from Asteroids.Asteroids import Player, Saucer, Asteroid
+from Asteroids.Player import Player
+from Asteroids.Bullet import Bullet
+from Asteroids.Saucer import Saucer
+from Asteroids.Asteroid import Asteroid
 
 class Game:
     def __init__(self,fps,model_playing,disable_display) -> None:
@@ -64,7 +67,7 @@ class Game:
         self.saucer = Saucer()
 
         while self.gameState == 0:
-            self.playStep()
+            self.play_step()
 
     def CloseGame():
         pygame.quit()
@@ -109,6 +112,20 @@ class Game:
         # Game menu
         if self.gameState == 1:
             return
+        
+        if action[0]==1:
+            self.player.thrust=True
+        else:
+            self.player.thrust=False
+
+        if action[1] == 1 and action[2] == 0:
+            self.player.rtspd = self.player_max_rtspd
+        elif action[2]==1 and action[1]==0:
+            self.player.rtspd= -self.player_max_rtspd
+        else: 
+            self.player.rtspd=0
+        if action[3]==1:
+            self.bullets.append(Bullet(self.player.x, self.player.y, self.player.dir))
 
         # Update player
         self.player.updatePlayer()
@@ -187,11 +204,11 @@ class Game:
                         xTo = random.randrange(0, self.display_width)
                         yTo = random.randrange(0, self.display_height)
                     self.asteroids.append(Asteroid(xTo, yTo, "Large"))
-                next_level_delay = 0
+                self.next_level_delay = 0
 
         # Update intensity
-        if intensity < self.stage * 450:
-            intensity += 1
+        if self.intensity < self.stage * 450:
+            self.intensity += 1
 
         # Saucer
         if self.saucer.state == "Dead":

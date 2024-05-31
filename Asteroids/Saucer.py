@@ -1,7 +1,7 @@
 import math
 import random
 import pygame
-import Bullet
+from Bullet import Bullet
 class Saucer:
     def __init__(self,saucer_speed,display_width,display_height,disable_display):
         self.x = 0
@@ -11,10 +11,10 @@ class Saucer:
         self.dirchoice = ()
         self.bullets = []
         self.cd = 0
-        self.bdir = 0
+        self.dir = 0
         self.soundDelay = 0
-        self.snd_saucerB = pygame.mixer.Sound("Sounds/saucerBig.wav")
-        self.snd_saucerS = pygame.mixer.Sound("Sounds/saucerSmall.wav")
+        self.snd_saucerB = pygame.mixer.Sound("Asteroids/Sounds/saucerBig.wav")
+        self.snd_saucerS = pygame.mixer.Sound("Asteroids/Sounds/saucerSmall.wav")
         self.saucer_speed=saucer_speed
         self.display_width=display_width
         self.display_height=display_height

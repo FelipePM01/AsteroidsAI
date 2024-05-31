@@ -1,14 +1,13 @@
 import pygame
 import math
 import random
-
-from Asteroids.Player import Player
-from Asteroids.Bullet import Bullet
-from Asteroids.Saucer import Saucer
-from Asteroids.Asteroid import Asteroid
+from Player import Player
+from Bullet import Bullet
+from Saucer import Saucer
+from Asteroid import Asteroid
 
 class Game:
-    def __init__(self,fps,model_playing,disable_display) -> None:
+    def __init__(self,fps,model_playing,disable_display):
         pygame.init()
         #init run constants
         self.fps=fps
@@ -39,11 +38,32 @@ class Game:
 
         #init sound effects
 
-        self.snd_fire = pygame.mixer.Sound("Sounds/fire.wav")
-        self.snd_bangL = pygame.mixer.Sound("Sounds/bangLarge.wav")
-        self.snd_bangM = pygame.mixer.Sound("Sounds/bangMedium.wav")
-        self.snd_bangS = pygame.mixer.Sound("Sounds/bangSmall.wav")
-        self.snd_extra = pygame.mixer.Sound("Sounds/extra.wav")
+        self.snd_fire = pygame.mixer.Sound("Asteroids/Sounds/fire.wav")
+        self.snd_bangL = pygame.mixer.Sound("Asteroids/Sounds/bangLarge.wav")
+        self.snd_bangM = pygame.mixer.Sound("Asteroids/Sounds/bangMedium.wav")
+        self.snd_bangS = pygame.mixer.Sound("Asteroids/Sounds/bangSmall.wav")
+        self.snd_extra = pygame.mixer.Sound("Asteroids/Sounds/extra.wav")
+
+        self.gameState = 0 # 0 = jogando 1 = fim de jogo
+        self.playerState = 0 # 0 = vivo 1 = morto
+        self.player_pieces = 0
+        self.player_dying_delay = 0
+        self.player_invi_dur = 0
+        self.hyperspace = 0
+        self.next_level_delay = 0
+        self.bullet_capacity = 4
+        self.bullets = []
+        self.asteroids = []
+        self.stage = 3
+        self.score = 0
+        self.live = 0
+        self.oneUp_multiplier = 1
+        self.playOneUpSFX = 0
+        self.intensity = 0
+        self.reward = 0
+
+        self.player = None
+        self.saucer = None
         
     def start_game_loop(self):
         self.gameState = 0 # 0 = jogando 1 = fim de jogo
@@ -65,10 +85,7 @@ class Game:
         self.reward = 0
 
         self.player = Player(self.display_width / 2, self.display_height / 2, self.player_max_speed, self.player_max_rtspd, self.fd_fric, self.bd_fric, self.player_size, self.display_width, self.display_height)
-        self.saucer = Saucer()
-
-        while self.gameState == 0:
-            self.play_step()
+        self.saucer = Saucer(self.saucer_speed, self.display_width, self.display_height, True)
 
     def CloseGame():
         pygame.quit()
@@ -414,22 +431,28 @@ class Game:
         # Tick fps
         self.timer.tick(self.FPS)
         print(self.timer.get_fps(), self.gameState)
-        return self.reward, self.gameState, self.score
+        
+        if self.gameState == 0:
+            gameOver = False
+        else:
+            gameOver = True
+
+        return self.reward, gameOver, self.score
 
     def get_state(self):
         nearest_asteroids_number=8
         asteroids_dist=[[math.sqrt((asteroid.x-self.player.x)**2+(asteroid.y-self.player.y)**2),asteroid ]for asteroid in self.asteroids]
         asteroids_dist.sort(key=lambda asteroid: asteroid[0])
         nearest_asteroids=[asteroid[1] for asteroid in asteroids_dist[0:nearest_asteroids_number]]
-        state=[]
-        for i in nearest_asteroids:
-            state.append(i.x)
-            state.append(i.y)
-            state.append(i.size)
-            state.append(i.dir)
-            state.append(i.speed)
+        state=[0 for i in range(nearest_asteroids_number)]
+        for i in range(len(nearest_asteroids)):
+            state[i]=nearest_asteroids[i].x
+            state[i]=nearest_asteroids[i].y
+            state[i]=nearest_asteroids[i].size
+            state[i]=nearest_asteroids[i].dir
+            state[i]=nearest_asteroids[i].speed
         state+=[self.player.x,self.player.y,self.player.dir,self.saucer.x,self.saucer.y,self.saucer.dir]
-        if self.saucer.bullets[0]:
+        if len(self.saucer.bullets) != 0:
             state+=[self.saucer.bullet[0].x,self.saucer.bullet[0].y,self.saucer.bullet[0].dir]
         else:
             state+=[self.saucer.x,self.saucer.y,self.saucer.dir]

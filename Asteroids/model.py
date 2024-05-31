@@ -12,7 +12,7 @@ class Linear_QNet(nn.Module):
 
     def forward(self, x):
         x = F.relu(self.linear1(x))
-        x = F.relu(self.linear2(x))
+        x = self.linear2(x)
         return x
         
 
@@ -31,7 +31,7 @@ class QTrainer:
         self.lr = lr
         self.gamma = gamma
         self.model = model
-        self.optimizer = optim.Adam(model.parametros(), lr=self.lr) #ver outras opções
+        self.optimizer = optim.Adam(model.parameters(), lr=self.lr) #ver outras opções
         self.criterio = nn.MSELoss()
 
     def train_step(self, state, action, reward, next_state, done):

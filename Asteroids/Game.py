@@ -451,11 +451,15 @@ class Game:
             state[i+2]=nearest_asteroids[i//5].size
             state[i+3]=nearest_asteroids[i//5].dir
             state[i+4]=nearest_asteroids[i//5].speed
-        state+=[self.player.x,self.player.y,self.player.dir,self.saucer.x,self.saucer.y,self.saucer.dir]
-        if len(self.saucer.bullets) != 0:
-            state+=[self.saucer.bullet[0].x,self.saucer.bullet[0].y,self.saucer.bullet[0].dir]
-        else:
+        state+=[self.player.x,self.player.y,self.player.dir]
+        if self.saucer!=None and self.saucer.state!="Dead":
             state+=[self.saucer.x,self.saucer.y,self.saucer.dir]
+            if len(self.saucer.bullets) != 0:
+                state+=[self.saucer.bullet[0].x,self.saucer.bullet[0].y,self.saucer.bullet[0].dir]
+            else:
+                state+=[self.saucer.x,self.saucer.y,self.saucer.dir]
+        else:
+            state+=[0,0,0,0,0,0]
         return state
 
 

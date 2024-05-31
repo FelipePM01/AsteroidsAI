@@ -8,7 +8,7 @@ from helper import plot
 
 MAX_MEMORY = 100_000
 BATCH_SIZE = 1000
-LR = 0.01
+LR = 0.001
 
 class Agent: 
 
@@ -17,7 +17,7 @@ class Agent:
         self.epsilon = 0.001 #randomness
         self.gamma = 0.9 # discount rate
         self.memory = deque(maxlen=MAX_MEMORY) # popleft()
-        self.model = model.Linear_QNet(49,1024,4) 
+        self.model = model.Linear_QNet(14,9,4) 
         self.trainer = model.QTrainer(self.model, LR, self.gamma) 
 
     def remember(self, state, action, reward, next_state, game_over_state):
@@ -47,6 +47,9 @@ class Agent:
             state0 = torch.tensor(state, dtype=torch.float)
             prediction = self.model(state0)
             move = torch.argmax(prediction).item()
+            shot = torch.gt(prediction, torch.tensor([0,0,0,0]))
+            if shot[-1] == True:
+                final_move[-1] = 1
             final_move[move] = 1
         
         return final_move

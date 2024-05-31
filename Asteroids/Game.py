@@ -26,7 +26,7 @@ class Game:
         self.player_size = 10
         self.fd_fric = 0.5
         self.bd_fric = 0.1
-        self.player_max_speed = 20
+        self.player_max_speed = 5
         self.player_max_rtspd = 10
         self.bullet_speed = 15
         self.saucer_speed = 5
@@ -192,16 +192,16 @@ class Game:
                         self.asteroids.append(Asteroid(a.x, a.y, "Normal"))
                         self.asteroids.append(Asteroid(a.x, a.y, "Normal"))
                         self.score += 20
-                        self.reward += 20
+                        self.reward = 20
                     elif a.t == "Normal":
                         self.asteroids.append(Asteroid(a.x, a.y, "Small"))
                         self.asteroids.append(Asteroid(a.x, a.y, "Small"))
                         self.score += 50
-                        self.reward += 50
+                        self.reward = 50
 
                     else:
                         self.score += 100
-                        self.reward += 100
+                        self.reward = 100
 
                     self.asteroids.remove(a)
 
@@ -270,10 +270,10 @@ class Game:
                     # Add points
                     if self.saucer.type == "Large":
                         self.score += 200
-                        self.reward += 200
+                        self.reward = 200
                     else:
                         self.score += 1000
-                        self.reward += 1000
+                        self.reward = 200
 
                     # Set saucer state
                     self.saucer.state = "Dead"
@@ -294,7 +294,7 @@ class Game:
                     self.player_dying_delay = 30
                     self.player_invi_dur = 120
                     self.player.killPlayer()
-                    self.reward -= 1000
+                    self.reward = -100
 
                     if self.live != 0:
                         self.live -= 1
@@ -337,7 +337,7 @@ class Game:
                         self.player_dying_delay = 30
                         self.player_invi_dur = 120
                         self.player.killPlayer()
-                        self.reward -= 1000
+                        self.reward = -100
 
                         if self.live != 0:
                             self.live -= 1
@@ -367,17 +367,17 @@ class Game:
                         self.asteroids.append(Asteroid(a.x, a.y, "Normal"))
                         self.asteroids.append(Asteroid(a.x, a.y, "Normal"))
                         self.score += 20
-                        self.reward += 20
+                        self.reward = 20
 
                     elif a.t == "Normal":
                         self.asteroids.append(Asteroid(a.x, a.y, "Small"))
                         self.asteroids.append(Asteroid(a.x, a.y, "Small"))
                         self.score += 50
-                        self.reward += 50
+                        self.reward = 50
 
                     else:
                         self.score += 100
-                        self.reward += 100
+                        self.reward = 100
 
                     self.asteroids.remove(a)
                     self.bullets.remove(b)
@@ -409,12 +409,12 @@ class Game:
                             if self.player_blink == 0:
                                 self.player_blink = 10
                             else:
-                                self.player.drawPlayer()
+                                self.player.drawPlayer(self.gameDisplay, self.disable_display, self.white)
                         self.player_blink -= 1
                     else:
                         self.player_dying_delay -= 1
             else:
-                self.player.drawPlayer(self.disable_display,self.gameDisplay,self.white)
+                self.player.drawPlayer(self.gameDisplay, self.disable_display, self.white)
         else:
 
             self.live = -1
@@ -440,7 +440,7 @@ class Game:
         return self.reward, gameOver, self.score
 
     def get_state(self):
-        nearest_asteroids_number=8
+        nearest_asteroids_number=1
         asteroids_dist=[[math.sqrt((asteroid.x-self.player.x)**2+(asteroid.y-self.player.y)**2),asteroid ]for asteroid in self.asteroids]
         asteroids_dist.sort(key=lambda asteroid: asteroid[0])
         nearest_asteroids=[asteroid[1] for asteroid in asteroids_dist[0:nearest_asteroids_number]]

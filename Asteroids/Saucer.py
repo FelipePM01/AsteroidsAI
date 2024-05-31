@@ -3,7 +3,7 @@ import random
 import pygame
 from Bullet import Bullet
 class Saucer:
-    def __init__(self,saucer_speed,display_width,display_height,disable_display):
+    def __init__(self,saucer_speed,display_width,display_height,disable_display, bullet_speed):
         self.x = 0
         self.y = 0
         self.state = "Dead"
@@ -19,6 +19,7 @@ class Saucer:
         self.display_width=display_width
         self.display_height=display_height
         self.disable_display=disable_display
+        self.bullet_speed = bullet_speed
 
 
         
@@ -44,7 +45,7 @@ class Saucer:
         if self.type == "Large":
             self.bdir = random.randint(0, 360)
         if self.cd == 0:
-            self.bullets.append(Bullet(self.x, self.y, self.bdir))
+            self.bullets.append(Bullet(self.x, self.y, self.bdir, self.bullet_speed, self.display_height, self.display_width))
             self.cd = 30
         else:
             self.cd -= 1

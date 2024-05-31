@@ -7,13 +7,13 @@ import model
 
 MAX_MEMORY = 100_000
 BATCH_SIZE = 1000
-LR = 0.001
+LR = 0.01
 
 class Agent: 
 
     def __init__(self):
         self.n_games = 0
-        self.epsilon = 0 #randomness
+        self.epsilon = 0.001 #randomness
         self.gamma = 0.9 # discount rate
         self.memory = deque(maxlen=MAX_MEMORY) # popleft()
         self.model = model.Linear_QNet(49,1024,4) 

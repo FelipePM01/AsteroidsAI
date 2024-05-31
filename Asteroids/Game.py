@@ -5,6 +5,7 @@ from Player import Player
 from Bullet import Bullet
 from Saucer import Saucer
 from Asteroid import Asteroid
+from DeadPlayer import deadPlayer
 
 class Game:
     def __init__(self,fps,model_playing,disable_display):
@@ -171,9 +172,9 @@ class Game:
             if self.player_state != 1:
                 if self.isColliding(self.player.x, self.player.y, a.x, a.y, a.size):
                     # Create ship fragments
-                    self.player_pieces.append(self.deadPlayer(self.player.x, self.player.y, 5 * self.player_size / (2 * math.cos(math.atan(1 / 3)))))
-                    self.player_pieces.append(self.deadPlayer(self.player.x, self.player.y, 5 * self.player_size / (2 * math.cos(math.atan(1 / 3)))))
-                    self.player_pieces.append(self.deadPlayer(self.player.x, self.player.y, self.player_size))
+                    self.player_pieces.append(deadPlayer(self.player.x, self.player.y, 5 * self.player_size / (2 * math.cos(math.atan(1 / 3)))))
+                    self.player_pieces.append(deadPlayer(self.player.x, self.player.y, 5 * self.player_size / (2 * math.cos(math.atan(1 / 3)))))
+                    self.player_pieces.append(deadPlayer(self.player.x, self.player.y, self.player_size))
 
                     # Kill player
                     self.player_state = 1
@@ -206,7 +207,7 @@ class Game:
 
         # Update ship fragments
         for f in self.player_pieces:
-            f.updateDeadPlayer()
+            f.updateDeadPlayer(self.disable_display, self.gameDisplay, self.white)
             if f.x > self.display_width or f.x < 0 or f.y > self.display_height or f.y < 0:
                 self.player_pieces.remove(f)
 
@@ -244,7 +245,7 @@ class Game:
             self.saucer.bdir = math.degrees(math.atan2(-self.saucer.y + self.player.y, -self.saucer.x + self.player.x) + math.radians(random.uniform(acc, -acc)))
 
             self.saucer.updateSaucer()
-            self.saucer.drawSaucer()
+            self.saucer.drawSaucer(self.gameDisplay, self.white)
 
             # Check for collision w/ asteroid
             for a in self.asteroids:
@@ -284,9 +285,9 @@ class Game:
             if self.isColliding(self.saucer.x, self.saucer.y, self.player.x, self.player.y, self.saucer.size):
                 if self.player_state != 1:
                     # Create ship fragments
-                    self.player_pieces.append(self.deadPlayer(self.player.x, self.player.y, 5 * self.player_size / (2 * math.cos(math.atan(1 / 3)))))
-                    self.player_pieces.append(self.deadPlayer(self.player.x, self.player.y, 5 * self.player_size / (2 * math.cos(math.atan(1 / 3)))))
-                    self.player_pieces.append(self.deadPlayer(self.player.x, self.player.y, self.player_size))
+                    self.player_pieces.append(deadPlayer(self.player.x, self.player.y, 5 * self.player_size / (2 * math.cos(math.atan(1 / 3)))))
+                    self.player_pieces.append(deadPlayer(self.player.x, self.player.y, 5 * self.player_size / (2 * math.cos(math.atan(1 / 3)))))
+                    self.player_pieces.append(deadPlayer(self.player.x, self.player.y, self.player_size))
 
                     # Kill player
                     self.player_state = 1
@@ -303,7 +304,7 @@ class Game:
             # Saucer's bullets
             for b in self.saucer.bullets:
                 # Update bullets
-                b.updateBullet()
+                b.updateBullet(self.disable_display, self.gameDisplay, self.white)
 
                 # Check for collision w/ asteroids
                 for a in self.asteroids:
@@ -327,9 +328,9 @@ class Game:
                 if self.isColliding(self.player.x, self.player.y, b.x, b.y, 5):
                     if self.player_state != 1:
                         # Create ship fragments
-                        self.player_pieces.append(self.deadPlayer(self.player.x, self.player.y, 5 * self.player_size / (2 * math.cos(math.atan(1 / 3)))))
-                        self.player_pieces.append(self.deadPlayer(self.player.x, self.player.y, 5 * self.player_size / (2 * math.cos(math.atan(1 / 3)))))
-                        self.player_pieces.append(self.deadPlayer(self.player.x, self.player.y, self.player_size))
+                        self.player_pieces.append(deadPlayer(self.player.x, self.player.y, 5 * self.player_size / (2 * math.cos(math.atan(1 / 3)))))
+                        self.player_pieces.append(deadPlayer(self.player.x, self.player.y, 5 * self.player_size / (2 * math.cos(math.atan(1 / 3)))))
+                        self.player_pieces.append(deadPlayer(self.player.x, self.player.y, self.player_size))
 
                         # Kill player
                         self.player_state = 1
@@ -430,7 +431,6 @@ class Game:
 
         # Tick fps
         self.timer.tick(self.fps)
-        print(self.timer.get_fps(), self.gameState)
         
         if self.gameState == 0:
             gameOver = False
@@ -455,7 +455,7 @@ class Game:
         if self.saucer!=None and self.saucer.state!="Dead":
             state+=[self.saucer.x,self.saucer.y,self.saucer.dir]
             if len(self.saucer.bullets) != 0:
-                state+=[self.saucer.bullet[0].x,self.saucer.bullet[0].y,self.saucer.bullet[0].dir]
+                state+=[self.saucer.bullets[0].x,self.saucer.bullets[0].y,self.saucer.bullets[0].dir]
             else:
                 state+=[self.saucer.x,self.saucer.y,self.saucer.dir]
         else:

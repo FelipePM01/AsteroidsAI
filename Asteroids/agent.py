@@ -17,7 +17,7 @@ class Agent:
         self.epsilon = 0.001 #randomness
         self.gamma = 0.9 # discount rate
         self.memory = deque(maxlen=MAX_MEMORY) # popleft()
-        self.model = model.Linear_QNet(49,1024,4) 
+        self.model = model.Linear_QNet(14,1024,4) 
         self.trainer = model.QTrainer(self.model, LR, self.gamma) 
 
     def remember(self, state, action, reward, next_state, game_over_state):
@@ -47,6 +47,9 @@ class Agent:
             state0 = torch.tensor(state, dtype=torch.float)
             prediction = self.model(state0)
             move = torch.argmax(prediction).item()
+            shot = torch.gt(prediction, torch.tensor([0,0,0,0]))
+            if shot[-1] == True:
+                final_move[-1] = 1
             final_move[move] = 1
         
         return final_move
@@ -58,7 +61,7 @@ def train():
     total_score = 0
     record = 0
     agent = Agent()
-    game = Game(10000, True, True)
+    game = Game(60, True, False)
     game.start_game_loop()
 
     while True: 
@@ -90,11 +93,11 @@ def train():
             
             print('Game', agent.n_games, 'Score', score, 'Record', record)
 
-            plot_scores.append(score)
-            total_score += score
-            mean_score = total_score / agent.n_games
-            plot_mean_scores.append(mean_score)
-            plot(plot_scores, plot_mean_scores)
+            # plot_scores.append(score)
+            # total_score += score
+            # mean_score = total_score / agent.n_games
+            # plot_mean_scores.append(mean_score)
+            # plot(plot_scores, plot_mean_scores)
 
 if __name__ == '__main__':
     train()

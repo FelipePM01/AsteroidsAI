@@ -68,7 +68,7 @@ class Game:
     def start_game_loop(self):
         self.gameState = 0 # 0 = jogando 1 = fim de jogo
         self.playerState = 0 # 0 = vivo 1 = morto
-        self.player_pieces = 0
+        self.player_pieces = []
         self.player_dying_delay = 0
         self.player_invi_dur = 0
         self.hyperspace = 0
@@ -85,7 +85,7 @@ class Game:
         self.reward = 0
 
         self.player = Player(self.display_width / 2, self.display_height / 2, self.player_max_speed, self.player_max_rtspd, self.fd_fric, self.bd_fric, self.player_size, self.display_width, self.display_height)
-        self.saucer = Saucer(self.saucer_speed, self.display_width, self.display_height, True)
+        self.saucer = Saucer(self.saucer_speed, self.display_width, self.display_height, True, self.bullet_speed)
 
     def CloseGame():
         pygame.quit()
@@ -143,7 +143,7 @@ class Game:
         else: 
             self.player.rtspd=0
         if action[3]==1:
-            self.bullets.append(Bullet(self.player.x, self.player.y, self.player.dir))
+            self.bullets.append(Bullet(self.player.x, self.player.y, self.player.dir, self.bullet_speed, self.display_height, self.display_width))
 
         # Update player
         self.player.updatePlayer()
@@ -167,7 +167,7 @@ class Game:
 
         # Check for collision w/ asteroid
         for a in self.asteroids:
-            a.updateAsteroid()
+            a.updateAsteroid(self.display_width, self.display_height, self.gameDisplay, True, self.white)
             if self.player_state != 1:
                 if self.isColliding(self.player.x, self.player.y, a.x, a.y, a.size):
                     # Create ship fragments
@@ -356,7 +356,7 @@ class Game:
         # Bullets
         for b in self.bullets:
             # Update bullets
-            b.updateBullet()
+            b.updateBullet(self.disable_display,self.gameDisplay,self.white)
 
             # Check for bullets collide w/ asteroid
             for a in self.asteroids:
@@ -413,7 +413,7 @@ class Game:
                     else:
                         self.player_dying_delay -= 1
             else:
-                self.player.drawPlayer()
+                self.player.drawPlayer(self.disable_display,self.gameDisplay,self.white)
         else:
 
             self.live = -1
@@ -422,14 +422,14 @@ class Game:
         self.drawText(str(self.score), self.white, 60, 20, 40, False)
 
         # Draw Lives
-        for l in range(self.live + 1):
-            Player(75 + l * 25, 75).drawPlayer()
+        # for l in range(self.live + 1):
+        #     Player(75 + l * 25, 75).drawPlayer()
 
         # Update screen
         self.pygameDisplayUpdate()
 
         # Tick fps
-        self.timer.tick(self.FPS)
+        self.timer.tick(self.fps)
         print(self.timer.get_fps(), self.gameState)
         
         if self.gameState == 0:
@@ -444,13 +444,13 @@ class Game:
         asteroids_dist=[[math.sqrt((asteroid.x-self.player.x)**2+(asteroid.y-self.player.y)**2),asteroid ]for asteroid in self.asteroids]
         asteroids_dist.sort(key=lambda asteroid: asteroid[0])
         nearest_asteroids=[asteroid[1] for asteroid in asteroids_dist[0:nearest_asteroids_number]]
-        state=[0 for i in range(nearest_asteroids_number)]
-        for i in range(len(nearest_asteroids)):
-            state[i]=nearest_asteroids[i].x
-            state[i]=nearest_asteroids[i].y
-            state[i]=nearest_asteroids[i].size
-            state[i]=nearest_asteroids[i].dir
-            state[i]=nearest_asteroids[i].speed
+        state=[0 for i in range(nearest_asteroids_number*5)]
+        for i in range(0,len(nearest_asteroids)*5,5):
+            state[i+0]=nearest_asteroids[i//5].x
+            state[i+1]=nearest_asteroids[i//5].y
+            state[i+2]=nearest_asteroids[i//5].size
+            state[i+3]=nearest_asteroids[i//5].dir
+            state[i+4]=nearest_asteroids[i//5].speed
         state+=[self.player.x,self.player.y,self.player.dir,self.saucer.x,self.saucer.y,self.saucer.dir]
         if len(self.saucer.bullets) != 0:
             state+=[self.saucer.bullet[0].x,self.saucer.bullet[0].y,self.saucer.bullet[0].dir]

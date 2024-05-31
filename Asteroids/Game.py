@@ -62,6 +62,7 @@ class Game:
         self.oneUp_multiplier = 1
         self.playOneUpSFX = 0
         self.intensity = 0
+        self.reward = 0
 
         self.player = Player(self.display_width / 2, self.display_height / 2, self.player_max_speed, self.player_max_rtspd, self.fd_fric, self.bd_fric, self.player_size, self.display_width, self.display_height)
         self.saucer = Saucer()
@@ -173,13 +174,16 @@ class Game:
                         self.asteroids.append(Asteroid(a.x, a.y, "Normal"))
                         self.asteroids.append(Asteroid(a.x, a.y, "Normal"))
                         self.score += 20
+                        self.reward += 20
                     elif a.t == "Normal":
                         self.asteroids.append(Asteroid(a.x, a.y, "Small"))
                         self.asteroids.append(Asteroid(a.x, a.y, "Small"))
                         self.score += 50
+                        self.reward += 50
 
                     else:
                         self.score += 100
+                        self.reward += 100
 
                     self.asteroids.remove(a)
 
@@ -248,8 +252,10 @@ class Game:
                     # Add points
                     if self.saucer.type == "Large":
                         self.score += 200
+                        self.reward += 200
                     else:
                         self.score += 1000
+                        self.reward += 1000
 
                     # Set saucer state
                     self.saucer.state = "Dead"
@@ -270,6 +276,7 @@ class Game:
                     self.player_dying_delay = 30
                     self.player_invi_dur = 120
                     self.player.killPlayer()
+                    self.reward -= 1000
 
                     if self.live != 0:
                         self.live -= 1
@@ -312,6 +319,7 @@ class Game:
                         self.player_dying_delay = 30
                         self.player_invi_dur = 120
                         self.player.killPlayer()
+                        self.reward -= 1000
 
                         if self.live != 0:
                             self.live -= 1
@@ -341,14 +349,17 @@ class Game:
                         self.asteroids.append(Asteroid(a.x, a.y, "Normal"))
                         self.asteroids.append(Asteroid(a.x, a.y, "Normal"))
                         self.score += 20
+                        self.reward += 20
 
                     elif a.t == "Normal":
                         self.asteroids.append(Asteroid(a.x, a.y, "Small"))
                         self.asteroids.append(Asteroid(a.x, a.y, "Small"))
                         self.score += 50
+                        self.reward += 50
 
                     else:
                         self.score += 100
+                        self.reward += 100
 
                     self.asteroids.remove(a)
                     self.bullets.remove(b)
@@ -403,5 +414,7 @@ class Game:
         # Tick fps
         self.timer.tick(self.FPS)
         print(self.timer.get_fps(), self.gameState)
+
+        return self.reward, self.gameState, self.score
 
                 

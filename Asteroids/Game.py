@@ -387,4 +387,23 @@ class Game:
         self.timer.tick(self.FPS)
         print(self.timer.get_fps(), self.gameState)
 
-                
+    def get_state(self):
+        nearest_asteroids_number=8
+        asteroids_dist=[[math.sqrt((asteroid.x-self.player.x)**2+(asteroid.y-self.player.y)**2),asteroid ]for asteroid in self.asteroids]
+        asteroids_dist.sort(key=lambda asteroid: asteroid[0])
+        nearest_asteroids=[asteroid[1] for asteroid in asteroids_dist[0:nearest_asteroids_number]]
+        state=[]
+        for i in nearest_asteroids:
+            state.append(i.x)
+            state.append(i.y)
+            state.append(i.size)
+            state.append(i.dir)
+            state.append(i.speed)
+        state+=[self.player.x,self.player.y,self.player.dir,self.saucer.x,self.saucer.y,self.saucer.dir]
+        if self.saucer.bullets[0]:
+            state+=[self.saucer.bullet[0].x,self.saucer.bullet[0].y,self.saucer.bullet[0].dir]
+        else:
+            state+=[self.saucer.x,self.saucer.y,self.saucer.dir]
+        return state
+
+                    

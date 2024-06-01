@@ -168,7 +168,7 @@ class Game:
 
         # Check for collision w/ asteroid
         for a in self.asteroids:
-            a.updateAsteroid(self.display_width, self.display_height, self.gameDisplay, True, self.white)
+            a.updateAsteroid(self.display_width, self.display_height, self.gameDisplay, self.disable_display, self.white)
             if self.player_state != 1:
                 if self.isColliding(self.player.x, self.player.y, a.x, a.y, a.size):
                     # Create ship fragments
@@ -181,27 +181,27 @@ class Game:
                     self.player_dying_delay = 30
                     self.player_invi_dur = 120
                     self.player.killPlayer()
+                    self.reward = -10
 
                     if self.live != 0:
                         self.live -= 1
                     else:
                         self.gameState = 1
 
-                    # Split asteroid
+                    #Split asteroid
                     if a.t == "Large":
-                        self.asteroids.append(Asteroid(a.x, a.y, "Normal"))
-                        self.asteroids.append(Asteroid(a.x, a.y, "Normal"))
-                        self.score += 20
-                        self.reward = 20
+                        #self.asteroids.append(Asteroid(a.x, a.y, "Normal"))
+                        self.score += 1
+                        self.reward = 1
                     elif a.t == "Normal":
-                        self.asteroids.append(Asteroid(a.x, a.y, "Small"))
-                        self.asteroids.append(Asteroid(a.x, a.y, "Small"))
-                        self.score += 50
-                        self.reward = 50
+                        #self.asteroids.append(Asteroid(a.x, a.y, "Small"))
+                        #self.asteroids.append(Asteroid(a.x, a.y, "Small"))
+                        self.score += 1
+                        self.reward = 1
 
                     else:
-                        self.score += 100
-                        self.reward = 100
+                        self.score += 1
+                        self.reward = 1
 
                     self.asteroids.remove(a)
 
@@ -219,13 +219,13 @@ class Game:
                 self.stage += 1
                 self.intensity = 0
                 # Spawn asteroid away of center
-                for i in range(self.stage):
+                for i in range(4):
                     xTo = self.display_width / 2
                     yTo = self.display_height / 2
                     while xTo - self.display_width / 2 < self.display_width / 4 and yTo - self.display_height / 2 < self.display_height / 4:
                         xTo = random.randrange(0, self.display_width)
                         yTo = random.randrange(0, self.display_height)
-                    self.asteroids.append(Asteroid(xTo, yTo, "Large"))
+                    self.asteroids.append(Asteroid(550, 350, "Large"))
                 self.next_level_delay = 0
 
         # Update intensity
@@ -254,13 +254,13 @@ class Game:
                     self.saucer.state = "Dead"
 
                     # Split asteroid
-                    if a.t == "Large":
-                        self.asteroids.append(Asteroid(a.x, a.y, "Normal"))
-                        self.asteroids.append(Asteroid(a.x, a.y, "Normal"))
+                    #if a.t == "Large":
+                         #self.asteroids.append(Asteroid(a.x, a.y, "Normal"))
+                         #self.asteroids.append(Asteroid(a.x, a.y, "Normal"))
 
-                    elif a.t == "Normal":
-                        self.asteroids.append(Asteroid(a.x, a.y, "Small"))
-                        self.asteroids.append(Asteroid(a.x, a.y, "Small"))
+                    #elif a.t == "Normal":
+                        #self.asteroids.append(Asteroid(a.x, a.y, "Small"))
+                        #self.asteroids.append(Asteroid(a.x, a.y, "Small"))
 
                     self.asteroids.remove(a)
 
@@ -269,11 +269,9 @@ class Game:
                 if self.isColliding(b.x, b.y, self.saucer.x, self.saucer.y, self.saucer.size):
                     # Add points
                     if self.saucer.type == "Large":
-                        self.score += 200
-                        self.reward = 200
+                        self.score += 1
                     else:
-                        self.score += 1000
-                        self.reward = 200
+                        self.score += 1
 
                     # Set saucer state
                     self.saucer.state = "Dead"
@@ -294,7 +292,7 @@ class Game:
                     self.player_dying_delay = 30
                     self.player_invi_dur = 120
                     self.player.killPlayer()
-                    self.reward = -100
+                    self.reward = -10
 
                     if self.live != 0:
                         self.live -= 1
@@ -310,13 +308,13 @@ class Game:
                 for a in self.asteroids:
                     if self.isColliding(b.x, b.y, a.x, a.y, a.size):
                         # Split asteroid
-                        if a.t == "Large":
-                            self.asteroids.append(Asteroid(a.x, a.y, "Normal"))
-                            self.asteroids.append(Asteroid(a.x, a.y, "Normal"))
+                        # if a.t == "Large":
+                        #     self.asteroids.append(Asteroid(a.x, a.y, "Normal"))
+                        #     self.asteroids.append(Asteroid(a.x, a.y, "Normal"))
 
-                        elif a.t == "Normal":
-                            self.asteroids.append(Asteroid(a.x, a.y, "Small"))
-                            self.asteroids.append(Asteroid(a.x, a.y, "Small"))
+                        # elif a.t == "Normal":
+                        #     self.asteroids.append(Asteroid(a.x, a.y, "Small"))
+                        #     self.asteroids.append(Asteroid(a.x, a.y, "Small"))
 
                         # Remove asteroid and bullet
                         self.asteroids.remove(a)
@@ -337,7 +335,7 @@ class Game:
                         self.player_dying_delay = 30
                         self.player_invi_dur = 120
                         self.player.killPlayer()
-                        self.reward = -100
+                        self.reward = -10
 
                         if self.live != 0:
                             self.live -= 1
@@ -364,20 +362,19 @@ class Game:
                 if b.x > a.x - a.size and b.x < a.x + a.size and b.y > a.y - a.size and b.y < a.y + a.size:
                     # Split asteroid
                     if a.t == "Large":
-                        self.asteroids.append(Asteroid(a.x, a.y, "Normal"))
-                        self.asteroids.append(Asteroid(a.x, a.y, "Normal"))
-                        self.score += 20
-                        self.reward = 20
-
+                        #self.asteroids.append(Asteroid(a.x, a.y, "Normal"))
+                        #self.asteroids.append(Asteroid(a.x, a.y, "Normal"))
+                        self.score += 1
+                        self.reward = 1
                     elif a.t == "Normal":
-                        self.asteroids.append(Asteroid(a.x, a.y, "Small"))
-                        self.asteroids.append(Asteroid(a.x, a.y, "Small"))
-                        self.score += 50
-                        self.reward = 50
+                        #self.asteroids.append(Asteroid(a.x, a.y, "Small"))
+                        #self.asteroids.append(Asteroid(a.x, a.y, "Small"))
+                        self.score += 1
+                        self.reward = 1
 
                     else:
-                        self.score += 100
-                        self.reward = 100
+                        self.score += 1
+                        self.reward = 1
 
                     self.asteroids.remove(a)
                     self.bullets.remove(b)
@@ -440,7 +437,7 @@ class Game:
         return self.reward, gameOver, self.score
 
     def get_state(self):
-        nearest_asteroids_number=1
+        nearest_asteroids_number=8
         asteroids_dist=[[math.sqrt((asteroid.x-self.player.x)**2+(asteroid.y-self.player.y)**2),asteroid ]for asteroid in self.asteroids]
         asteroids_dist.sort(key=lambda asteroid: asteroid[0])
         nearest_asteroids=[asteroid[1] for asteroid in asteroids_dist[0:nearest_asteroids_number]]

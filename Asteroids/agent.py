@@ -14,10 +14,10 @@ class Agent:
 
     def __init__(self):
         self.n_games = 0
-        self.epsilon = 0.001 #randomness
+        self.epsilon = 0.0 #randomness
         self.gamma = 0.9 # discount rate
         self.memory = deque(maxlen=MAX_MEMORY) # popleft()
-        self.model = model.Linear_QNet(14,9,4) 
+        self.model = model.Linear_QNet(49,256,4) 
         self.trainer = model.QTrainer(self.model, LR, self.gamma) 
 
     def remember(self, state, action, reward, next_state, game_over_state):

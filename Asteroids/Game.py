@@ -6,6 +6,8 @@ from Bullet import Bullet
 from Saucer import Saucer
 from Asteroid import Asteroid
 from DeadPlayer import deadPlayer
+import Utils
+import numpy as np
 
 class Game:
     def __init__(self,fps,model_playing,disable_display):
@@ -84,6 +86,7 @@ class Game:
         self.playOneUpSFX = 0
         self.intensity = 0
         self.reward = 0
+        self.framesAlive = 0
 
         self.player = Player(self.display_width / 2, self.display_height / 2, self.player_max_speed, self.player_max_rtspd, self.fd_fric, self.bd_fric, self.player_size, self.display_width, self.display_height)
         self.saucer = Saucer(self.saucer_speed, self.display_width, self.display_height, True, self.bullet_speed)
@@ -131,7 +134,7 @@ class Game:
         # Game menu
         if self.gameState == 1:
             return
-        
+        self.framesAlive+=1
         if action[0]==1:
             self.player.thrust=True
         else:
@@ -143,7 +146,7 @@ class Game:
             self.player.rtspd= -self.player_max_rtspd
         else: 
             self.player.rtspd=0
-        if action[3]==1:
+        if action[3]==1 and len(self.bullets) < self.bullet_capacity:
             self.bullets.append(Bullet(self.player.x, self.player.y, self.player.dir, self.bullet_speed, self.display_height, self.display_width))
 
         # Update player
@@ -192,16 +195,16 @@ class Game:
                         self.asteroids.append(Asteroid(a.x, a.y, "Normal"))
                         self.asteroids.append(Asteroid(a.x, a.y, "Normal"))
                         self.score += 20
-                        self.reward += 20
+                        #self.reward += 20
                     elif a.t == "Normal":
                         self.asteroids.append(Asteroid(a.x, a.y, "Small"))
                         self.asteroids.append(Asteroid(a.x, a.y, "Small"))
                         self.score += 50
-                        self.reward += 50
+                        #self.reward += 50
 
                     else:
                         self.score += 100
-                        self.reward += 100
+                        #self.reward += 100
 
                     self.asteroids.remove(a)
 
@@ -437,29 +440,35 @@ class Game:
         else:
             gameOver = True
 
-        return self.reward, gameOver, self.score
+        return self.reward+self.framesAlive//10, gameOver, self.score
 
     def get_state(self):
-        nearest_asteroids_number=8
-        asteroids_dist=[[math.sqrt((asteroid.x-self.player.x)**2+(asteroid.y-self.player.y)**2),asteroid ]for asteroid in self.asteroids]
-        asteroids_dist.sort(key=lambda asteroid: asteroid[0])
-        nearest_asteroids=[asteroid[1] for asteroid in asteroids_dist[0:nearest_asteroids_number]]
-        state=[0 for i in range(nearest_asteroids_number*5)]
-        for i in range(0,len(nearest_asteroids)*5,5):
-            state[i+0]=nearest_asteroids[i//5].x
-            state[i+1]=nearest_asteroids[i//5].y
-            state[i+2]=nearest_asteroids[i//5].size
-            state[i+3]=nearest_asteroids[i//5].dir
-            state[i+4]=nearest_asteroids[i//5].speed
-        state+=[self.player.x,self.player.y,self.player.dir]
-        if self.saucer!=None and self.saucer.state!="Dead":
-            state+=[self.saucer.x,self.saucer.y,self.saucer.dir]
-            if len(self.saucer.bullets) != 0:
-                state+=[self.saucer.bullets[0].x,self.saucer.bullets[0].y,self.saucer.bullets[0].dir]
-            else:
-                state+=[self.saucer.x,self.saucer.y,self.saucer.dir]
-        else:
-            state+=[0,0,0,0,0,0]
-        return state
+        display_dims = (self.display_width,self.display_height)
+        asteroidParams = [Utils.getThreatParams(self.player, a, a.speed,display_dims) for a in self.asteroids]
+        asteroidParams.sort(key=lambda asteroid: asteroid[4], reverse = True)
 
+        if len(asteroidParams) == 1:
+            asteroidParams.append(asteroidParams[0])
+
+        modelParams = [np.inf,0,0,90,np.inf,0,0,90]
+        for index, asteroid in enumerate(asteroidParams):
+            if index == 2:
+                break
+            for i in range(4):
+                modelParams[i+index*4] = asteroid[i]
+
+        if self.saucer != None and self.saucer.state == "Alive":
+            modelParams += Utils.getThreatParams(self.player, self.saucer, self.saucer_speed, display_dims)[:-1]
+        else:
+            modelParams += [np.inf,0,0,90]
+
+        if self.saucer != None and len(self.saucer.bullets) > 0:
+            modelParams += Utils.getThreatParams(self.player, self.saucer.bullets[0], self.bullet_speed, display_dims)[:-1]
+        else:
+            modelParams += [np.inf,0,0,90]
+        
+        playerSpeed, _ = Utils.recToPolar(self.player.hspeed, self.player.vspeed)
+        modelParams.append(playerSpeed)
+
+        return modelParams
 

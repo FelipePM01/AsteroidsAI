@@ -17,7 +17,7 @@ class Agent:
         self.epsilon = 0.001 #randomness
         self.gamma = 0.9 # discount rate
         self.memory = deque(maxlen=MAX_MEMORY) # popleft()
-        self.model = model.Linear_QNet(49,1024,4) 
+        self.model = model.Linear_QNet(17,128,4) 
         self.trainer = model.QTrainer(self.model, LR, self.gamma) 
 
     def remember(self, state, action, reward, next_state, game_over_state):
@@ -58,7 +58,7 @@ def train():
     total_score = 0
     record = 0
     agent = Agent()
-    game = Game(10000, True, True)
+    game = Game(100, True, False)
     game.start_game_loop()
 
     while True: 

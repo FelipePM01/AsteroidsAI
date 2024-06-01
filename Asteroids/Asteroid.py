@@ -15,7 +15,7 @@ class Asteroid:
 
         # Make random speed and direction
         self.speed = random.uniform(1, (40 - self.size) * 4 / 15)
-        self.dir = random.randrange(0, 360) * math.pi / 180
+        self.dir = random.randrange(0, 360)
 
         # Make random asteroid sprites
         full_circle = random.uniform(18, 36)
@@ -28,8 +28,8 @@ class Asteroid:
 
     def updateAsteroid(self,display_width,display_height,gameDisplay,disable_display,white):
         # Move asteroid
-        self.x += self.speed * math.cos(self.dir)
-        self.y += self.speed * math.sin(self.dir)
+        self.x += self.speed * math.cos(self.dir * math.pi / 180)
+        self.y += self.speed * math.sin(self.dir * math.pi / 180)
 
         # Check for wrapping
         if self.x > display_width:

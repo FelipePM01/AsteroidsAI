@@ -1,6 +1,7 @@
 import pygame
 import math
 import random
+from utils import threatDistance, recToPolar, limitTo180, within_margin
 from Player import Player
 from Bullet import Bullet
 from Saucer import Saucer
@@ -65,6 +66,7 @@ class Game:
 
         self.player = None
         self.saucer = None
+
         
     def start_game_loop(self):
         self.gameState = 0 # 0 = jogando 1 = fim de jogo
@@ -190,12 +192,12 @@ class Game:
 
                     #Split asteroid
                     if a.t == "Large":
-                        #self.asteroids.append(Asteroid(a.x, a.y, "Normal"))
+                        self.asteroids.append(Asteroid(a.x, a.y, "Normal"))
                         self.score += 1
                         self.reward = 1
                     elif a.t == "Normal":
-                        #self.asteroids.append(Asteroid(a.x, a.y, "Small"))
-                        #self.asteroids.append(Asteroid(a.x, a.y, "Small"))
+                        self.asteroids.append(Asteroid(a.x, a.y, "Small"))
+                        self.asteroids.append(Asteroid(a.x, a.y, "Small"))
                         self.score += 1
                         self.reward = 1
 
@@ -219,13 +221,13 @@ class Game:
                 self.stage += 1
                 self.intensity = 0
                 # Spawn asteroid away of center
-                for i in range(4):
+                for i in range(self.stage):
                     xTo = self.display_width / 2
                     yTo = self.display_height / 2
                     while xTo - self.display_width / 2 < self.display_width / 4 and yTo - self.display_height / 2 < self.display_height / 4:
                         xTo = random.randrange(0, self.display_width)
                         yTo = random.randrange(0, self.display_height)
-                    self.asteroids.append(Asteroid(550, 350, "Large"))
+                    self.asteroids.append(Asteroid(xTo, yTo, "Large"))
                 self.next_level_delay = 0
 
         # Update intensity
@@ -235,9 +237,9 @@ class Game:
         # Saucer
         if self.saucer.state == "Dead":
             if random.randint(0, 6000) <= (self.intensity * 2) / (self.stage * 9) and self.next_level_delay == 0:
-                self.saucer.createSaucer()
+                #self.saucer.createSaucer()
                 # Only small saucers >40000
-                if self.score >= 40000:
+                #if self.score >= 40000:
                     self.saucer.type = "Small"
         else:
             # Set saucer targer dir
@@ -254,13 +256,13 @@ class Game:
                     self.saucer.state = "Dead"
 
                     # Split asteroid
-                    #if a.t == "Large":
-                         #self.asteroids.append(Asteroid(a.x, a.y, "Normal"))
-                         #self.asteroids.append(Asteroid(a.x, a.y, "Normal"))
+                    if a.t == "Large":
+                         self.asteroids.append(Asteroid(a.x, a.y, "Normal"))
+                         self.asteroids.append(Asteroid(a.x, a.y, "Normal"))
 
-                    #elif a.t == "Normal":
-                        #self.asteroids.append(Asteroid(a.x, a.y, "Small"))
-                        #self.asteroids.append(Asteroid(a.x, a.y, "Small"))
+                    elif a.t == "Normal":
+                        self.asteroids.append(Asteroid(a.x, a.y, "Small"))
+                        self.asteroids.append(Asteroid(a.x, a.y, "Small"))
 
                     self.asteroids.remove(a)
 
@@ -308,13 +310,13 @@ class Game:
                 for a in self.asteroids:
                     if self.isColliding(b.x, b.y, a.x, a.y, a.size):
                         # Split asteroid
-                        # if a.t == "Large":
-                        #     self.asteroids.append(Asteroid(a.x, a.y, "Normal"))
-                        #     self.asteroids.append(Asteroid(a.x, a.y, "Normal"))
+                        if a.t == "Large":
+                            self.asteroids.append(Asteroid(a.x, a.y, "Normal"))
+                            self.asteroids.append(Asteroid(a.x, a.y, "Normal"))
 
-                        # elif a.t == "Normal":
-                        #     self.asteroids.append(Asteroid(a.x, a.y, "Small"))
-                        #     self.asteroids.append(Asteroid(a.x, a.y, "Small"))
+                        elif a.t == "Normal":
+                            self.asteroids.append(Asteroid(a.x, a.y, "Small"))
+                            self.asteroids.append(Asteroid(a.x, a.y, "Small"))
 
                         # Remove asteroid and bullet
                         self.asteroids.remove(a)
@@ -362,13 +364,13 @@ class Game:
                 if b.x > a.x - a.size and b.x < a.x + a.size and b.y > a.y - a.size and b.y < a.y + a.size:
                     # Split asteroid
                     if a.t == "Large":
-                        #self.asteroids.append(Asteroid(a.x, a.y, "Normal"))
-                        #self.asteroids.append(Asteroid(a.x, a.y, "Normal"))
+                        self.asteroids.append(Asteroid(a.x, a.y, "Normal"))
+                        self.asteroids.append(Asteroid(a.x, a.y, "Normal"))
                         self.score += 1
                         self.reward = 1
                     elif a.t == "Normal":
-                        #self.asteroids.append(Asteroid(a.x, a.y, "Small"))
-                        #self.asteroids.append(Asteroid(a.x, a.y, "Small"))
+                        self.asteroids.append(Asteroid(a.x, a.y, "Small"))
+                        self.asteroids.append(Asteroid(a.x, a.y, "Small"))
                         self.score += 1
                         self.reward = 1
 
@@ -437,26 +439,54 @@ class Game:
         return self.reward, gameOver, self.score
 
     def get_state(self):
-        nearest_asteroids_number=8
-        asteroids_dist=[[math.sqrt((asteroid.x-self.player.x)**2+(asteroid.y-self.player.y)**2),asteroid ]for asteroid in self.asteroids]
-        asteroids_dist.sort(key=lambda asteroid: asteroid[0])
-        nearest_asteroids=[asteroid[1] for asteroid in asteroids_dist[0:nearest_asteroids_number]]
-        state=[0 for i in range(nearest_asteroids_number*5)]
-        for i in range(0,len(nearest_asteroids)*5,5):
-            state[i+0]=nearest_asteroids[i//5].x
-            state[i+1]=nearest_asteroids[i//5].y
-            state[i+2]=nearest_asteroids[i//5].size
-            state[i+3]=nearest_asteroids[i//5].dir
-            state[i+4]=nearest_asteroids[i//5].speed
-        state+=[self.player.x,self.player.y,self.player.dir]
-        if self.saucer!=None and self.saucer.state!="Dead":
-            state+=[self.saucer.x,self.saucer.y,self.saucer.dir]
-            if len(self.saucer.bullets) != 0:
-                state+=[self.saucer.bullets[0].x,self.saucer.bullets[0].y,self.saucer.bullets[0].dir]
-            else:
-                state+=[self.saucer.x,self.saucer.y,self.saucer.dir]
-        else:
-            state+=[0,0,0,0,0,0]
+        angles = []
+        state = [0 for i in range(10)]
+        for asteroid in self.asteroids:
+            vec = threatDistance(self.player, asteroid, (self.display_width, self.display_height))
+            dist, vecAngle  = recToPolar(vec)
+            angulo_relativo = limitTo180(vecAngle-self.player.dir)
+            if within_margin(angulo_relativo, 0):
+                state[0] = 1
+            elif within_margin(angulo_relativo, 45):
+                state[1] = 1
+            elif within_margin(angulo_relativo, 90):
+                state[2] = 1
+            elif within_margin(angulo_relativo, 135):
+                state[3] = 1
+            elif within_margin(angulo_relativo, 180):
+                state[4] = 1
+            elif within_margin(angulo_relativo, -180):
+                state[4] = 1
+            elif within_margin(angulo_relativo, -45):
+                state[5] = 1
+            elif within_margin(angulo_relativo, -90):
+                state[6] = 1
+            elif within_margin(angulo_relativo, -135):
+                state[7] = 1
+        if limitTo180(self.player.dir) > 0:
+            state[8] = 1
+        if self.player.vspeed > 0 or self.player.hspeed > 0:
+            state[9] = 1
+        # nearest_asteroids_number=8
+        # asteroids_dist=[[math.sqrt((asteroid.x-self.player.x)**2+(asteroid.y-self.player.y)**2),asteroid ]for asteroid in self.asteroids]
+        # asteroids_dist.sort(key=lambda asteroid: asteroid[0])
+        # nearest_asteroids=[asteroid[1] for asteroid in asteroids_dist[0:nearest_asteroids_number]]
+        # state=[0 for i in range(nearest_asteroids_number*5)]
+        # for i in range(0,len(nearest_asteroids)*5,5):
+        #     state[i+0]=nearest_asteroids[i//5].x
+        #     state[i+1]=nearest_asteroids[i//5].y
+        #     state[i+2]=nearest_asteroids[i//5].size
+        #     state[i+3]=nearest_asteroids[i//5].dir
+        #     state[i+4]=nearest_asteroids[i//5].speed
+        # state+=[self.player.x,self.player.y,self.player.dir]
+        # if self.saucer!=None and self.saucer.state!="Dead":
+        #     state+=[self.saucer.x,self.saucer.y,self.saucer.dir]
+        #     if len(self.saucer.bullets) != 0:
+        #         state+=[self.saucer.bullets[0].x,self.saucer.bullets[0].y,self.saucer.bullets[0].dir]
+        #     else:
+        #         state+=[self.saucer.x,self.saucer.y,self.saucer.dir]
+        # else:
+        #     state+=[0,0,0,0,0,0]
         return state
 
 

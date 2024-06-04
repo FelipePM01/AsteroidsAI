@@ -17,7 +17,7 @@ class Agent:
         self.epsilon = 0.0 #randomness
         self.gamma = 0.9 # discount rate
         self.memory = deque(maxlen=MAX_MEMORY) # popleft()
-        self.model = model.Linear_QNet(49,256,4) 
+        self.model = model.Linear_QNet(10,256,4) 
         self.trainer = model.QTrainer(self.model, LR, self.gamma) 
 
     def remember(self, state, action, reward, next_state, game_over_state):
@@ -37,19 +37,15 @@ class Agent:
 
     def get_action(self, state):
         #random moves: tradeoff exploration / exploitation
-        self.epsilon = 80 - self.n_games # numero de jogos
+        self.epsilon = max(0.01, 0.99 - self.n_games * 0.001)
         final_move = [0,0,0,0] # considerando [forward, left, right, shot]
         if random.randint(0, 200) < self.epsilon:
-            move = random.randint(0, 2)
+            move = random.randint(0, 3)
             final_move[move] = 1
-            final_move[3] = random.randint(0, 1)
         else:
             state0 = torch.tensor(state, dtype=torch.float)
             prediction = self.model(state0)
             move = torch.argmax(prediction).item()
-            shot = torch.gt(prediction, torch.tensor([0,0,0,0]))
-            if shot[-1] == True:
-                final_move[-1] = 1
             final_move[move] = 1
         
         return final_move
@@ -91,7 +87,7 @@ def train():
                 record = score
                 agent.model.save()
             
-            print('Game', agent.n_games, 'Score', score, 'Record', record)
+            #print('Game', agent.n_games, 'Score', score, 'Record', record)
 
             plot_scores.append(score)
             total_score += score

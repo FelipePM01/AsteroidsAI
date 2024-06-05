@@ -131,6 +131,7 @@ class Game:
         return False
 
     def play_step(self, action):
+        reward=0
         # Game menu
         if self.gameState == 1:
             return
@@ -195,16 +196,16 @@ class Game:
                         self.asteroids.append(Asteroid(a.x, a.y, "Normal"))
                         self.asteroids.append(Asteroid(a.x, a.y, "Normal"))
                         self.score += 20
-                        #self.reward += 20
+                        reward += 20
                     elif a.t == "Normal":
                         self.asteroids.append(Asteroid(a.x, a.y, "Small"))
                         self.asteroids.append(Asteroid(a.x, a.y, "Small"))
                         self.score += 50
-                        #self.reward += 50
+                        reward += 50
 
                     else:
                         self.score += 100
-                        #self.reward += 100
+                        reward += 100
 
                     self.asteroids.remove(a)
 
@@ -272,11 +273,11 @@ class Game:
                 if self.isColliding(b.x, b.y, self.saucer.x, self.saucer.y, self.saucer.size):
                     # Add points
                     if self.saucer.type == "Large":
-                        self.score += 200
-                        self.reward += 200
+                        self.score += 25
+                        reward += 25
                     else:
-                        self.score += 1000
-                        self.reward += 1000
+                        self.score += 50
+                        reward += 50
 
                     # Set saucer state
                     self.saucer.state = "Dead"
@@ -297,7 +298,7 @@ class Game:
                     self.player_dying_delay = 30
                     self.player_invi_dur = 120
                     self.player.killPlayer()
-                    self.reward -= 1000
+                    reward -= 200
 
                     if self.live != 0:
                         self.live -= 1
@@ -340,7 +341,7 @@ class Game:
                         self.player_dying_delay = 30
                         self.player_invi_dur = 120
                         self.player.killPlayer()
-                        self.reward -= 1000
+                        reward -= 1000
 
                         if self.live != 0:
                             self.live -= 1
@@ -370,17 +371,17 @@ class Game:
                         self.asteroids.append(Asteroid(a.x, a.y, "Normal"))
                         self.asteroids.append(Asteroid(a.x, a.y, "Normal"))
                         self.score += 20
-                        self.reward += 20
+                        reward += 20
 
                     elif a.t == "Normal":
                         self.asteroids.append(Asteroid(a.x, a.y, "Small"))
                         self.asteroids.append(Asteroid(a.x, a.y, "Small"))
                         self.score += 50
-                        self.reward += 50
+                        reward += 50
 
                     else:
                         self.score += 100
-                        self.reward += 100
+                        reward += 100
 
                     self.asteroids.remove(a)
                     self.bullets.remove(b)
@@ -440,7 +441,7 @@ class Game:
         else:
             gameOver = True
 
-        return self.reward+self.framesAlive//10, gameOver, self.score
+        return reward+self.framesAlive//10, gameOver, self.score
 
     def get_state(self):
         display_dims = (self.display_width,self.display_height)
@@ -467,8 +468,9 @@ class Game:
         else:
             modelParams += [np.inf,0,0,90]
         
-        playerSpeed, _ = Utils.recToPolar(self.player.hspeed, self.player.vspeed)
+        playerSpeed, playerDir = Utils.recToPolar(self.player.hspeed, self.player.vspeed)
         modelParams.append(playerSpeed)
+        modelParams.append(playerDir)
 
         return modelParams
 

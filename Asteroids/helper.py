@@ -5,9 +5,7 @@ from IPython import display
 plt.ioff()
 
 def plot(scores, mean_scores):
-    display.clear_output(wait=True)
-    display.display(plt.gcf())
-    plt.clf()
+    fig=plt.figure()
     plt.title('Training...')
     plt.xlabel('Number of Games')
     plt.ylabel('Score')
@@ -16,7 +14,8 @@ def plot(scores, mean_scores):
     plt.ylim(ymin=0)
     plt.text(len(scores)-1, scores[-1], str(scores[-1]))
     plt.text(len(mean_scores)-1, mean_scores[-1], str(mean_scores[-1]))
-    plt.show(block=False)
+    plt.savefig('plots/plot.png')
+    plt.close(fig)
     plt.pause(.1)
 
 def plot_time(time):

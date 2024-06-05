@@ -8,7 +8,7 @@ from helper import plot
 
 MAX_MEMORY = 100_000
 BATCH_SIZE = 1000
-LR = 0.01
+LR = 0.2
 
 class Agent: 
 
@@ -17,7 +17,7 @@ class Agent:
         self.epsilon = 0.001 #randomness
         self.gamma = 0.9 # discount rate
         self.memory = deque(maxlen=MAX_MEMORY) # popleft()
-        self.model = model.Linear_QNet(17,128,4) 
+        self.model = model.Linear_QNet(18,128,4) 
         self.trainer = model.QTrainer(self.model, LR, self.gamma) 
 
     def remember(self, state, action, reward, next_state, game_over_state):
@@ -61,7 +61,7 @@ def train():
     total_score = 0
     record = 0
     agent = Agent()
-    game = Game(100, True, False)
+    game = Game(5000, True, True)
     game.start_game_loop()
 
     while True: 
@@ -93,11 +93,11 @@ def train():
             
             print('Game', agent.n_games, 'Score', score, 'Record', record)
 
-            # plot_scores.append(score)
-            # total_score += score
-            # mean_score = total_score / agent.n_games
-            # plot_mean_scores.append(mean_score)
-            # plot(plot_scores, plot_mean_scores)
+            plot_scores.append(score)
+            total_score += score
+            mean_score = total_score / agent.n_games
+            plot_mean_scores.append(mean_score)
+            plot(plot_scores, plot_mean_scores)
 
 if __name__ == '__main__':
     train()

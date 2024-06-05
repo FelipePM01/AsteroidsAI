@@ -40,9 +40,8 @@ class Agent:
         self.epsilon = 80 - self.n_games # numero de jogos
         final_move = [0,0,0,0] # considerando [forward, left, right, shot]
         if random.randint(0, 200) < self.epsilon:
-            move = random.randint(0, 2)
+            move = random.randint(0, 3)
             final_move[move] = 1
-            final_move[3] = random.randint(0, 1)
         else:
             state0 = torch.tensor(state, dtype=torch.float)
             prediction = self.model(state0)

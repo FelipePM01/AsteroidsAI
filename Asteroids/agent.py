@@ -37,7 +37,7 @@ class Agent:
 
     def get_action(self, state):
         #random moves: tradeoff exploration / exploitation
-        self.epsilon = max(0.01, 0.99 - self.n_games * 0.001)
+        self.epsilon = 80 - self.n_games
         final_move = [0,0,0,0] # considerando [forward, left, right, shot]
         if random.randint(0, 200) < self.epsilon:
             move = random.randint(0, 3)
@@ -57,7 +57,7 @@ def train():
     total_score = 0
     record = 0
     agent = Agent()
-    game = Game(10000, True, True)
+    game = Game(1000, True, True)
     game.start_game_loop()
 
     while True: 

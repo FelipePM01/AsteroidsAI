@@ -58,7 +58,6 @@ class QTrainer:
                     Q_new = reward[i] + self.gamma * torch.max(self.model(next_state[i]))
 
                 target [i][torch.argmax(action).item()] = Q_new
-            print(Q_new)
 
             self.optimizer.zero_grad()
             loss = self.criterio(target, pred)

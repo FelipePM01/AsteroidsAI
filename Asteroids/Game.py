@@ -183,7 +183,7 @@ class Game:
                     self.player_dying_delay = 30
                     self.player_invi_dur = 120
                     self.player.killPlayer()
-                    self.reward = -10
+                    self.reward = -1000
 
                     if self.live != 0:
                         self.live -= 1
@@ -193,17 +193,17 @@ class Game:
                     #Split asteroid
                     if a.t == "Large":
                         self.asteroids.append(Asteroid(a.x, a.y, "Normal"))
-                        self.score += 1
-                        self.reward = 1
+                        self.score += 20
+                        self.reward = 20
                     elif a.t == "Normal":
                         self.asteroids.append(Asteroid(a.x, a.y, "Small"))
                         self.asteroids.append(Asteroid(a.x, a.y, "Small"))
-                        self.score += 1
-                        self.reward = 1
+                        self.score += 50
+                        self.reward = 50
 
                     else:
-                        self.score += 1
-                        self.reward = 1
+                        self.score += 100
+                        self.reward = 100
 
                     self.asteroids.remove(a)
 
@@ -271,9 +271,11 @@ class Game:
                 if self.isColliding(b.x, b.y, self.saucer.x, self.saucer.y, self.saucer.size):
                     # Add points
                     if self.saucer.type == "Large":
-                        self.score += 1
+                        self.score += 200
+                        self.reward = 200
                     else:
-                        self.score += 1
+                        self.score += 1000
+                        self.reward = 1000
 
                     # Set saucer state
                     self.saucer.state = "Dead"
@@ -294,7 +296,7 @@ class Game:
                     self.player_dying_delay = 30
                     self.player_invi_dur = 120
                     self.player.killPlayer()
-                    self.reward = -10
+                    self.reward = -1000
 
                     if self.live != 0:
                         self.live -= 1
@@ -337,7 +339,7 @@ class Game:
                         self.player_dying_delay = 30
                         self.player_invi_dur = 120
                         self.player.killPlayer()
-                        self.reward = -10
+                        self.reward = -1000
 
                         if self.live != 0:
                             self.live -= 1
@@ -366,17 +368,17 @@ class Game:
                     if a.t == "Large":
                         self.asteroids.append(Asteroid(a.x, a.y, "Normal"))
                         self.asteroids.append(Asteroid(a.x, a.y, "Normal"))
-                        self.score += 1
-                        self.reward = 1
+                        self.score += 20
+                        self.reward = 20
                     elif a.t == "Normal":
                         self.asteroids.append(Asteroid(a.x, a.y, "Small"))
                         self.asteroids.append(Asteroid(a.x, a.y, "Small"))
-                        self.score += 1
-                        self.reward = 1
+                        self.score += 50
+                        self.reward = 50
 
                     else:
-                        self.score += 1
-                        self.reward = 1
+                        self.score += 100
+                        self.reward = 100
 
                     self.asteroids.remove(a)
                     self.bullets.remove(b)

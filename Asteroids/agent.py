@@ -57,7 +57,7 @@ def train():
     total_score = 0
     record = 0
     agent = Agent()
-    game = Game(10000, True, True)
+    game = Game(30, True, False)
     game.start_game_loop()
 
     while True: 

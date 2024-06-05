@@ -86,7 +86,7 @@ class Game:
         self.reward = 0
 
         self.player = Player(self.display_width / 2, self.display_height / 2, self.player_max_speed, self.player_max_rtspd, self.fd_fric, self.bd_fric, self.player_size, self.display_width, self.display_height)
-        self.saucer = Saucer(self.saucer_speed, self.display_width, self.display_height, True, self.bullet_speed)
+        self.saucer = Saucer(self.saucer_speed, self.display_width, self.display_height, self.disable_display, self.bullet_speed)
 
     def CloseGame():
         pygame.quit()
@@ -168,7 +168,7 @@ class Game:
 
         # Check for collision w/ asteroid
         for a in self.asteroids:
-            a.updateAsteroid(self.display_width, self.display_height, self.gameDisplay, True, self.white)
+            a.updateAsteroid(self.display_width, self.display_height, self.gameDisplay, self.disable_display, self.white)
             if self.player_state != 1:
                 if self.isColliding(self.player.x, self.player.y, a.x, a.y, a.size):
                     # Create ship fragments
@@ -410,12 +410,12 @@ class Game:
                             if self.player_blink == 0:
                                 self.player_blink = 10
                             else:
-                                self.player.drawPlayer()
+                                self.player.drawPlayer(self.gameDisplay,self.disable_display,self.white)
                         self.player_blink -= 1
                     else:
                         self.player_dying_delay -= 1
             else:
-                self.player.drawPlayer(self.disable_display,self.gameDisplay,self.white)
+                self.player.drawPlayer(self.gameDisplay,self.disable_display,self.white)
         else:
 
             self.live = -1
